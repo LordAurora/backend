@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Metadata Microservice</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #f7f7f7 0%, #e2e2e2 100%);
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    .header {
+      margin-bottom: 30px;
+    }
+    .header h1 {
+      font-weight: 700;
+      font-size: 28px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .header p {
+      font-size: 18px;
+      color: #666;
+      margin: 0;
+    }
+    .form {
+      margin: 0;
+    }
+    .form input[type="file"] {
+      width: calc(100% - 22px);
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+    .form button[type="submit"] {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .form button[type="submit"]:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f9f9f9;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: left;
+    }
+    .output h2 {
+      font-weight: 700;
+      font-size: 20px;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .output p {
+      font-size: 16px;
+      color: #555;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1> Metadata Microservice</h1>
+      <p>Upload a file</p>
+    </div>
+    <form id="file-form" enctype="multipart/form-data" class="form">
+      <input type="file" name="upfile" id="upfile" />
+      <button type="submit">Upload File</button>
+    </form>
+    <div id="output" class="output"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('file-form');
+    const output = document.getElementById('output');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('upfile');
+      const file = fileInput.files[0];
+
+      const formData = new FormData();
+      formData.append('upfile', file);
+
+      fetch('/api/fileanalyse', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          output.innerHTML = `
+            <h2>File Metadata</h2>
+            <p><strong>File Name:</strong> ${data.name}</p>
+            <p><strong>File Type:</strong> ${data.type}</p>
+            <p><strong>File Size:</strong> ${data.size} bytes</p>
+          `;
+        })
+        .catch((error) => console.error(error));
+    });
+  </script>
+</body>
+</html>
